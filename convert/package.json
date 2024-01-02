@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "aws-sdk": "^2.1528.0",
-    "heic-convert": "^1.2.4"
-  }
-}

@@ -7,7 +7,7 @@ exports.handler = async (event) => {
   // Check if queryStringParameters exists and has the filename parameter
   if (!event.queryStringParameters || !event.queryStringParameters.filename) {
     return {
-      statusCode: 400, // Bad Request
+      statusCode: 400,
       body: JSON.stringify({ error: "Missing or invalid filename parameter" }),
     };
   }

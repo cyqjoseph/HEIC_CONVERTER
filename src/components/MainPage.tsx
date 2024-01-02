@@ -71,7 +71,7 @@ function MainPage() {
         console.log(response);
         if (response.ok) {
           const data = await response.json();
-          await new Promise((resolve) => setTimeout(resolve, retryInterval));
+          await new Promise((resolve) => setTimeout(resolve, 5000));
           setPngUrl(data.url);
           return;
         }
