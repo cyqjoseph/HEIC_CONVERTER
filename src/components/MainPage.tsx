@@ -24,20 +24,11 @@ function MainPage() {
     setPngUrl(null);
 
     try {
-      const apiGatewayUrl =
-        "https://uhki8nawxb.execute-api.ap-southeast-1.amazonaws.com/beta";
-
+      const apiGatewayUrl = process.env.REACT_APP_AWS_GATEWAY_API_URL;
       const bucketName = "cyqjoseph-source-bucket";
       const filename = encodeURIComponent(heicFile.name);
 
       const fullUrl = `${apiGatewayUrl}/${bucketName}/${filename}`;
-      // const response = await fetch(fullUrl);
-      //   const data = await response.json();
-      // if (!response.ok) {
-      //   throw new Error("Failed to fetch presigned url");
-      // }
-
-      console.log(heicFile);
       const uploadResponse = await fetch(fullUrl, {
         method: "PUT",
         body: heicFile,
@@ -49,7 +40,6 @@ function MainPage() {
       if (uploadResponse.ok) {
         alert("File uploaded successfully.");
       } else {
-        console.log("Upload response:", uploadResponse);
         throw new Error("File upload failed.");
       }
     } catch (err) {
@@ -66,23 +56,26 @@ function MainPage() {
       return;
     }
     // temp using retryInterval
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     const maxRetries = 10;
-    const retryInterval = 3000;
+    const retryInterval = 5000;
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const apiGatewayUrl =
-          "https://uhki8nawxb.execute-api.ap-southeast-1.amazonaws.com/beta/HEICFetch";
+        const apiGatewayUrl = `${process.env.REACT_APP_AWS_GATEWAY_API_URL}/HEICFetch`;
         const filename = encodeURIComponent(heicFile.name);
 
         const response = await fetch(`${apiGatewayUrl}?filename=${filename}`);
-        console.log(response);
         if (response.ok) {
           const data = await response.json();
-          await new Promise((resolve) => setTimeout(resolve, 3000));
-          console.log("resolved");
-          setPngUrl(data.url);
-          setUploading(false);
-          return;
+          if (data.url) {
+            setPngUrl(data.url); // Set the URL only if it's available
+            setUploading(false);
+            return;
+          }
+        } else if (response.status === 404) {
+          await new Promise((resolve) => setTimeout(resolve, retryInterval));
+        } else {
+          throw new Error("An error occurred while fetching the file.");
         }
         // monkey fix
         await new Promise((resolve) => setTimeout(resolve, retryInterval));

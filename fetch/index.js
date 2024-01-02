@@ -24,6 +24,11 @@ exports.handler = async (event) => {
   };
 
   try {
+    // Check if the file exists in the destination bucket
+    await s3
+      .headObject({ Bucket: destinationBucket, Key: pngFileName })
+      .promise();
+
     const url = s3.getSignedUrl("getObject", params);
     return {
       statusCode: 200,
@@ -35,9 +40,20 @@ exports.handler = async (event) => {
     };
   } catch (err) {
     console.error(err);
+
+    // Determine the status code based on the error
+    const statusCode = err.code === "NotFound" ? 404 : 500;
+
     return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Error generating pre-signed URL" }),
+      statusCode: statusCode,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        error: "Error generating pre-signed URL",
+        details: err.message,
+      }),
     };
   }
 };
