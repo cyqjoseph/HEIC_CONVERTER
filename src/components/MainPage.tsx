@@ -1,11 +1,15 @@
 import { useState } from "react";
-import AWS from "aws-sdk";
+import Header from "./Header";
+import { Button, Form, Container, Row, Col, Alert } from "react-bootstrap";
 
 function MainPage() {
   const [heicFile, setHeicFile] = useState<File | null>(null);
   const [pngUrl, setPngUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<boolean>(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUploading(false);
+    setPngUrl(null);
     if (event.target.files) {
       setHeicFile(event.target.files[0]);
     }
@@ -16,6 +20,8 @@ function MainPage() {
       alert("Please select a file to upload.");
       return;
     }
+    setUploading(true);
+    setPngUrl(null);
 
     try {
       const apiGatewayUrl =
@@ -49,6 +55,7 @@ function MainPage() {
     } catch (err) {
       console.error("Error during file upload:", err);
       alert("File upload failed.");
+      setUploading(false);
     }
     fetchFile();
   };
@@ -71,8 +78,10 @@ function MainPage() {
         console.log(response);
         if (response.ok) {
           const data = await response.json();
-          await new Promise((resolve) => setTimeout(resolve, 5000));
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          console.log("resolved");
           setPngUrl(data.url);
+          setUploading(false);
           return;
         }
         // monkey fix
@@ -80,6 +89,7 @@ function MainPage() {
       } catch (err) {
         console.error("Error during file fetch:", err);
         alert("Failed to fetch the file.");
+        setUploading(false);
       }
     }
     alert("Failed to fetch the file.");
@@ -93,6 +103,7 @@ function MainPage() {
     if (heicFile) {
       link.download = heicFile.name.replace(".HEIC", ".png");
     }
+    console.log(link);
     link.download = heicFile
       ? heicFile.name.replace(".HEIC", ".png")
       : "download.png";
@@ -103,12 +114,41 @@ function MainPage() {
 
   return (
     <div>
-      <div>
-        <input type="file" accept="image/heic" onChange={handleFileChange} />
-        <button onClick={uploadFile}>Upload</button>
-        {/* <button onClick={fetchFile}>Fetch Converted File</button> */}
-        {pngUrl && <button onClick={downloadPng}>Download PNG File</button>}
-      </div>
+      <Header />
+      <Container className="p-3">
+        <Row className="justify-content-center">
+          <Col md={6}>
+            {uploading && (
+              <Alert variant="info">Processing file, please wait...</Alert>
+            )}
+            {pngUrl && (
+              <Alert variant="success">File is ready to download!</Alert>
+            )}
+            <Form>
+              <Form.Group controlId="formFile" className="mb-3">
+                <Form.Label>Select HEIC File</Form.Label>
+                <Form.Control
+                  type="file"
+                  accept="image/heic"
+                  onChange={handleFileChange}
+                />
+              </Form.Group>
+              <Button
+                variant="primary"
+                onClick={uploadFile}
+                disabled={!heicFile}
+              >
+                Upload
+              </Button>{" "}
+              {pngUrl && (
+                <Button variant="success" onClick={downloadPng}>
+                  Download PNG File
+                </Button>
+              )}
+            </Form>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 }
