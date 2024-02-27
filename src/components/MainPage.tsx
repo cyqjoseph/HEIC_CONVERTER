@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Header from "./Header";
+import Footer from "./Footer";
 import { Button, Form, Container, Row, Col, Alert } from "react-bootstrap";
 
 function MainPage() {
@@ -103,11 +104,13 @@ function MainPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    setUploading(false);
+    setHeicFile(null);
   };
 
   return (
     <div>
-      <Header />
       <Container className="p-3">
         <Row className="justify-content-center">
           <Col md={6}>
@@ -129,7 +132,7 @@ function MainPage() {
               <Button
                 variant="primary"
                 onClick={uploadFile}
-                disabled={!heicFile}
+                disabled={!heicFile || uploading}
               >
                 Upload
               </Button>{" "}
