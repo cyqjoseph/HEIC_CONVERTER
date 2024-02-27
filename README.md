@@ -1,46 +1,27 @@
-# Getting Started with Create React App
+# HEIC to PNG Converter
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Project URL**: [HEIC to PNG Converter](http://heic-website.s3-website-ap-southeast-1.amazonaws.com)
 
-## Available Scripts
+## Overview
 
-In the project directory, you can run:
+A serverless application that converts HEIC images to PNG format using AWS technologies. It features a React frontend for easy file uploads, with backend processing powered by AWS Lambda, S3, and API Gateway.
 
-### `npm start`
+## Architecture
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Frontend**: React app hosted on S3 for uploading HEIC files.
+- **Backend**:
+  - **AWS S3**: Two buckets for source (HEIC files) and destination (PNG files).
+  - **AWS Lambda**: Converts HEIC to PNG upon file upload.
+  - **AWS API Gateway**: Manages communication between the frontend and Lambda.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Quick Start
 
-### `npm test`
+1. **Upload**: Select and upload HEIC files through the web interface.
+2. **Conversion**: Files are automatically converted to PNG format.
+3. **Download**: Download the converted PNG files directly from the web interface.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Deployment
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Frontend assets are deployed to an S3 bucket.
+- Lambda function
+- API Gateway configured for frontend-backend communication.
